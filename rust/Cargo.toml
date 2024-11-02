@@ -1,0 +1,10 @@
+[package]
+name = "motor-controller-v1"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+modbus = "1.1.0"
+tokio-serial = "5.4.1"
+tokio = { version = "1.0", features = ["full"] }
+
