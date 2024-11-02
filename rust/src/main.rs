@@ -1,58 +1,27 @@
-// use modbus::{Client, tcp::Transport};
-// use tokio_serial::{SerialPortSettings, SerialPort}; 
-// use tokio::time::Duration;
+// SPDX-FileCopyrightText: Copyright (c) 2017-2024 slowtec GmbH <post@slowtec.de>
+// SPDX-License-Identifier: MIT OR Apache-2.0
 
-// #[tokio::main]
-// async fn main() -> Result<(), Box<dyn std::error::Error>> {
-//     let tty_path = "/dev/ttyUSB0"; // Specify your device path
+//! Asynchronous RTU client(master) example
 
-//     // Define the serial port settings, adding a timeout
-//     let settings = SerialPortSettings {
-//         baud_rate: 9600,
-//         timeout: Duration::from_secs(2),
-//         ..Default::default()
-//     };
-
-//     // Open the serial port with the specified settings
-//     let port = Serial::open_with_settings(tty_path, &settings)?;
-
-//     // Create the Modbus TCP transport with the serial port
-//     let mut ctx = Transport::new(port)?;
-
-//     // Send commands to the Modbus device
-//     ctx.write_single_register(0x2000, 0x0001).await?;
-//     ctx.write_single_register(0x2001, 0x0032).await?;
-//     ctx.write_single_register(0x2002, 100).await?;
-
-//     Ok(())
-// }
-
-
-use modbus::{Client, tcp::Transport};
-// use modbus::{Client, serial::SerialTransport};
-// use tokio_serial::{SerialPortBuilder};
-// use tokio_serial::SerialPortBuilderExt;
-use tokio_serial::SerialStream;
-use tokio::time::Duration;
-
-#[tokio::main]
+#[tokio::main(flavor = "current_thread")]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let tty_path = "/dev/ttyUSB0"; // Specify your device path
+    use tokio_serial::SerialStream;
 
-    // Open the serial port with a specified baud rate
-    let port = tokio_serial::new(tty_path, 9600).open_native()?;
-    // let mut port = tokio_serial::new(tty_path, 9600).open_native_async()?;
-    // let port = tokio_serial::new(tty_path, 9600).open_native_async()?;
+    use tokio_modbus::prelude::*;
 
-    // Create the Modbus TCP transport with the serial port
-    let mut ctx = Transport::new(port.into())?;
-    // let mut ctx = SerialTransport::new(port);
-    // let mut ctx = Transport::new(port);
+    let tty_path = "/dev/ttyUSB0";
+    let slave = Slave(0x17);
 
-    // Send commands to the Modbus device
-    // ctx.write_single_register(0x2000, 0x0001);
-    // ctx.write_single_register(0x2001, 0x0032);
-    // ctx.write_single_register(0x2002, 100);
+    let builder = tokio_serial::new(tty_path, 19200);
+    let port = SerialStream::open(&builder).unwrap();
+
+    let mut ctx = rtu::attach_slave(port, slave);
+    println!("Reading a sensor value");
+    let rsp = ctx.read_holding_registers(0x082B, 2).await??;
+    println!("Sensor value is: {rsp:?}");
+
+    println!("Disconnecting");
+    ctx.disconnect().await?;
 
     Ok(())
 }
