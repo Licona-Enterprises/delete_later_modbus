@@ -1,12 +1,9 @@
 #!/usr/bin/env python3
 import pymodbus
-from pymodbus.pdu import ModbusRequest
 from pymodbus.client import ModbusSerialClient
 
-from pymodbus.transaction import ModbusRtuFramer
-
 PORT = '/dev/ttyUSB0' 
-BAUDRATE = 9600       
+BAUDRATE = 115200       
 SLAVE_ID = 1 
 
 client = ModbusSerialClient(
