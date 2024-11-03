@@ -1,19 +1,27 @@
 #!/usr/bin/env python3
 import pymodbus
 from pymodbus.pdu import ModbusRequest
-
-# orginal implementation
-# from pymodbus.client.sync import ModbusSerialClient as ModbusClient
-# our implementaion 
 from pymodbus.client import ModbusSerialClient
 
 from pymodbus.transaction import ModbusRtuFramer
 
-client = ModbusSerialClient(method='rtu', port="COM9", baudrate=115200, parity='E', timeout=0.1)
+PORT = '/dev/ttyUSB0' 
+BAUDRATE = 9600       
+SLAVE_ID = 1 
+
+client = ModbusSerialClient(
+    port=PORT,
+    baudrate=BAUDRATE,
+    stopbits=1,
+    bytesize=8,
+    parity='N',
+    timeout=1
+)
+
 connection = client.connect()
 
 read_vals  = client.read_holding_registers(248, 4, unit=1) # start_address, count, slave_id
 print(read_vals.registers)
 
 # write registers
-# write  = client.write_register(1,425,unit=1)# address = 1, value to set = 425, slave ID = 1
+write  = client.write_register(1,425,unit=1)# address = 1, value to set = 425, slave ID = 1
