@@ -1,3 +1,4 @@
 minimalmodbus==2.1.1
-pymodbus==2.5.3
+pymodbus==3.7.4
 pyserial==3.5
+six==1.16.0
