@@ -4,7 +4,7 @@ import time
 
 # Establish connection to the DM556RS using RS485
 client = ModbusClient(
-    method='rtu',                # Use RTU method for RS485
+    #method='rtu',                # Use RTU method for RS485
     port='/dev/ttyUSB0',         # Replace with the correct port for your RS485 adapter
     baudrate=115200,             # Baud rate, ensure this matches the DM556RS settings
     stopbits=1,
@@ -51,6 +51,10 @@ write_register(0x0191, 32)
 # Example: Jog CW
 write_register(0x1801, 0x4001)
 print("Sent JOG CW command")
+
+'''
+This section we should write_register() for pulse and direction 
+'''
 
 # Step 3: Testing and Tuning
 # Read status to ensure proper operation
