@@ -53,7 +53,35 @@ write_register(0x1801, 0x4001)
 print("Sent JOG CW command")
 
 '''
-This section we should write_register() for pulse and direction 
+This section includes additional write register commands for stepper motor and wheels
+
+# Step 1: Initial Configuration (enable drive)
+write_register(0x00F, 1)  # Enable drive via RS485 (Pr0.07)
+
+# Step 2: Control Setup - Configure Motion Parameters
+# Set JOG velocity (register 0x01E1). Example: Set speed to 500 RPM (value depends on your driver specs)
+write_register(0x01E1, 500)  # Adjust value as needed for desired speed
+
+# Set acceleration (register 0x01E7). Example: Set acceleration to 200 RPM/s
+write_register(0x01E7, 200)  # Adjust for acceleration/deceleration profile
+
+# Step 3: Set the Control Command (e.g., start JOG CW)
+write_register(0x1801, 0x4001)  # Start JOG CW (continuous clockwise rotation)
+
+# Optional: Set deceleration (if separate deceleration register exists)
+# write_register(0x01E8, 200)  # Example: Deceleration to match acceleration
+
+# Step 4: Additional Motion Features
+# If position control is required:
+# Write to the target position register (e.g., 0x0201 for the position)
+# write_register(0x0201, 1000)  # Move to a position (1000 steps/units, for example)
+
+# Step 5: Verify motor status and ensure operation
+status = read_register(0x1003)  # Read motion state register to check status
+if status and status[0] & 0x02:  # Check if Bit1 indicates the drive is enabled and running
+    print("Drive is enabled and motor is rotating")
+else:
+    print("Drive is not running as expected")
 '''
 
 # Step 3: Testing and Tuning
@@ -67,3 +95,16 @@ else:
 # Close the client connection when done
 client.close()
 print("Connection closed")
+
+
+
+
+
+
+
+
+
+
+
+
+
